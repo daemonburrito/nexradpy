@@ -1,1 +1,2 @@
-from decoder import Decoder
+import decoder
+import decoders

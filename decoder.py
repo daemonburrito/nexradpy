@@ -1,4 +1,5 @@
 import struct, sys, os
+import decoders.p94
 
 class Decoder():
     message_offset = 0
@@ -51,6 +52,15 @@ class Decoder():
         except IOError:
             print "Couldn't load file"
 
+    def decode(self):
+        self.decode_message_header()
+
+        if self.message_header['message_code'] == 94:
+
+            self.__class__ = decoders.p94.p94
+
+        self.decode_product_description()
+
     def decode_message_header(self):
         f = self.handle
         f.seek(self.message_offset)
@@ -79,20 +89,22 @@ class Decoder():
 if __name__ == "__main__":
     decoder = Decoder()
     decoder.load_file(sys.argv[1])
+    decoder.decode()
+
     print decoder.header
 
-    decoder.decode_message_header()
+    #decoder.decode_message_header()
     print decoder.message_header
 
-    decoder.decode_product_description()
+    #decoder.decode_product_description()
     print decoder.product_description
 
-    print decoder.symbology_offset
-    f = decoder.handle
-    f.seek(decoder.symbology_offset)
-    print f.tell()
+    #print decoder.symbology_offset
+    #f = decoder.handle
+    #f.seek(decoder.symbology_offset)
+    #print f.tell()
 
-    s = f.read(2)
-    print struct.unpack('>h', s)
+    #s = f.read(2)
+    #print struct.unpack('>h', s)
 
     decoder.close()
