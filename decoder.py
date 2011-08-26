@@ -93,18 +93,8 @@ if __name__ == "__main__":
 
     print decoder.header
 
-    #decoder.decode_message_header()
     print decoder.message_header
 
-    #decoder.decode_product_description()
     print decoder.product_description
-
-    #print decoder.symbology_offset
-    #f = decoder.handle
-    #f.seek(decoder.symbology_offset)
-    #print f.tell()
-
-    #s = f.read(2)
-    #print struct.unpack('>h', s)
 
     decoder.close()
