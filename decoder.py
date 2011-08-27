@@ -1,4 +1,4 @@
-import struct, sys, os
+import struct, sys, os, pprint
 import decoders.p94
 
 class Decoder():
@@ -30,7 +30,7 @@ class Decoder():
             'offset_to_graphic',
             'offset_to_tabular']
 
-    header_format = '>2h2i3h'
+    message_header_format = '>2h2i3h'
     product_description_format = '>2x2i7hihi4xh48x2b3i'
 
     def __init__(self):
@@ -47,7 +47,7 @@ class Decoder():
                 self.header += c
                 c = f.read(1)
 
-            self.message_offset = (f.tell() - 1)
+            self.message_header_offset = f.tell() - 1
 
         except IOError:
             print "Couldn't load file"
@@ -57,31 +57,58 @@ class Decoder():
 
         if self.message_header['message_code'] == 94:
 
-            self.__class__ = decoders.p94.p94
+           self.__class__ = decoders.p94.p94
 
         self.decode_product_description()
 
-    def decode_message_header(self):
-        f = self.handle
-        f.seek(self.message_offset)
-        s = f.read(struct.calcsize(self.header_format))
-        d = struct.unpack(self.header_format, s)
+        if (self.product_description['offset_to_symbology'] != 0) :
+            self.decode_symbology()
+        if (self.product_description['offset_to_graphic'] != 0) :
+            self.decode_graphic()
+        if (self.product_description['offset_to_tabular'] != 0) :
+            self.decode_tabular()
 
-        self.message_header = {}
-        for a, b in zip(self.message_header_fields, d):
-            self.message_header[a] = b
+    def decode_message_header(self):
+        self.message_header = self.read_section(self.message_header_offset, self.message_header_format, self.message_header_fields)
+
+        self.product_description_offset = self.handle.tell()
 
     def decode_product_description(self):
-        f = self.handle
+        self.product_description = self.read_section(self.product_description_offset, self.product_description_format, self.product_description_fields)
 
-        s = f.read(struct.calcsize(self.product_description_format))
-        d = struct.unpack(self.product_description_format, s)
+        if (self.product_description['offset_to_symbology'] != 0):
+            self.symbology_offset = (self.product_description['offset_to_symbology'] * 2) + self.message_header_offset
+        
+        if (self.product_description['offset_to_graphic'] != 0):
+            self.graphic_offset = (self.product_description['offset_to_graphic'] * 2) + self.message_header_offset
 
-        self.product_description = {}
-        for a, b in zip(self.product_description_fields, d):
-            self.product_description[a] = b
+        if (self.product_description['offset_to_tabular'] != 0):
+            self.tabular_offset = (self.product_description['offset_to_tabular'] * 2) + self.message_header_offset
 
-        self.symbology_offset = (self.product_description['offset_to_symbology'] + self.message_offset) * 2
+    def decode_symbology(self):
+        pass
+    def decode_graphic(self):
+        pass
+    def decode_tabular(self):
+        pass
+
+    def read_section(self, offset, format_str, fields, string=False):
+        container = {}
+
+        if (not(string)):
+            f = self.handle
+
+            f.seek(offset)
+            s = f.read(struct.calcsize(format_str))
+            d = struct.unpack(format_str, s)
+        else:
+            size = struct.calcsize(format_str)
+            d = struct.unpack(format_str, string[offset:size])
+
+        for a, b in zip(fields, d):
+            container[a] = b
+
+        return container
 
     def close(self):
         self.handle.close()
@@ -93,8 +120,10 @@ if __name__ == "__main__":
 
     print decoder.header
 
-    print decoder.message_header
+    pprint.pprint(decoder.message_header)
 
-    print decoder.product_description
+    pprint.pprint(decoder.product_description)
+
+    pprint.pprint(decoder.symbology_block)
 
     decoder.close()
