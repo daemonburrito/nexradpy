@@ -103,7 +103,7 @@ class Decoder():
             d = struct.unpack(format_str, s)
         else:
             size = struct.calcsize(format_str)
-            d = struct.unpack(format_str, string[offset:size])
+            d = struct.unpack(format_str, string[offset:size+offset])
 
         for a, b in zip(fields, d):
             container[a] = b
