@@ -1,5 +1,6 @@
 import decoder, struct, bz2
 import pprint
+import Image, ImageDraw
 
 class p94(decoder.Decoder):
     product_description_fields = ['latitude', # i
@@ -61,7 +62,7 @@ class p94(decoder.Decoder):
 
         f.seek(self.symbology_offset)
 
-        product_size = self.message_header['message_length'] \
+        product_size = self.product['message_header']['message_length'] \
                 - struct.calcsize(self.message_header_format) \
                 - struct.calcsize(self.product_description_format)
 

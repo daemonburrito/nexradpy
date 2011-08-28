@@ -2,7 +2,6 @@ import struct, sys, os, pprint
 import decoders.p94
 
 class Decoder():
-    message_offset = 0
     message_header_fields = ['message_code',
             'message_date',
             'message_time',
@@ -34,7 +33,8 @@ class Decoder():
     product_description_format = '>2x2i7hihi4xh48x2b3i'
 
     def __init__(self):
-        self.header = ''
+        self.product = {}
+        self.product['header'] = ''
 
     def load_file(self, filespec):
         try:
@@ -44,7 +44,7 @@ class Decoder():
             c = f.read(1)
 
             while (ord(c) != 0):
-                self.header += c
+                self.product['header'] += c
                 c = f.read(1)
 
             self.message_header_offset = f.tell() - 1
@@ -55,35 +55,34 @@ class Decoder():
     def decode(self):
         self.decode_message_header()
 
-        if self.message_header['message_code'] == 94:
-
-           self.__class__ = decoders.p94.p94
+        if self.product['message_header']['message_code'] == 94:
+            self.__class__ = decoders.p94.p94
 
         self.decode_product_description()
 
-        if (self.product_description['offset_to_symbology'] != 0) :
+        if (self.product['description']['offset_to_symbology'] != 0) :
             self.decode_symbology()
-        if (self.product_description['offset_to_graphic'] != 0) :
+        if (self.product['description']['offset_to_graphic'] != 0) :
             self.decode_graphic()
-        if (self.product_description['offset_to_tabular'] != 0) :
+        if (self.product['description']['offset_to_tabular'] != 0) :
             self.decode_tabular()
 
     def decode_message_header(self):
-        self.message_header = self.read_section(self.message_header_offset, self.message_header_format, self.message_header_fields)
+        self.product['message_header'] = self.read_section(self.message_header_offset, self.message_header_format, self.message_header_fields)
 
         self.product_description_offset = self.handle.tell()
 
     def decode_product_description(self):
-        self.product_description = self.read_section(self.product_description_offset, self.product_description_format, self.product_description_fields)
+        self.product['description'] = self.read_section(self.product_description_offset, self.product_description_format, self.product_description_fields)
 
-        if (self.product_description['offset_to_symbology'] != 0):
-            self.symbology_offset = (self.product_description['offset_to_symbology'] * 2) + self.message_header_offset
+        if (self.product['description']['offset_to_symbology'] != 0):
+            self.symbology_offset = (self.product['description']['offset_to_symbology'] * 2) + self.message_header_offset
         
-        if (self.product_description['offset_to_graphic'] != 0):
-            self.graphic_offset = (self.product_description['offset_to_graphic'] * 2) + self.message_header_offset
+        if (self.product['description']['offset_to_graphic'] != 0):
+            self.graphic_offset = (self.product['description']['offset_to_graphic'] * 2) + self.message_header_offset
 
-        if (self.product_description['offset_to_tabular'] != 0):
-            self.tabular_offset = (self.product_description['offset_to_tabular'] * 2) + self.message_header_offset
+        if (self.product['description']['offset_to_tabular'] != 0):
+            self.tabular_offset = (self.product['description']['offset_to_tabular'] * 2) + self.message_header_offset
 
     def decode_symbology(self):
         pass
@@ -94,15 +93,14 @@ class Decoder():
 
     def read_section(self, offset, format_str, fields, string=False):
         container = {}
+        size = struct.calcsize(format_str)
 
         if (not(string)):
             f = self.handle
-
             f.seek(offset)
-            s = f.read(struct.calcsize(format_str))
+            s = f.read(size)
             d = struct.unpack(format_str, s)
         else:
-            size = struct.calcsize(format_str)
             d = struct.unpack(format_str, string[offset:size+offset])
 
         for a, b in zip(fields, d):
@@ -118,12 +116,16 @@ if __name__ == "__main__":
     decoder.load_file(sys.argv[1])
     decoder.decode()
 
-    print decoder.header
+    product = decoder.product
 
-    pprint.pprint(decoder.message_header)
+    pprint.pprint(product)
 
-    pprint.pprint(decoder.product_description)
+    #print decoder.header
 
-    pprint.pprint(decoder.symbology_block)
+    #pprint.pprint(decoder.message_header)
+
+    #pprint.pprint(decoder.product_description)
+
+    #pprint.pprint(decoder.symbology_block)
 
     decoder.close()
