@@ -1,7 +1,6 @@
 import struct, sys, os, pprint
-import decoders.p94
 
-class Decoder():
+class Generic():
     message_header_fields = ['message_code',
             'message_date',
             'message_time',
@@ -55,9 +54,6 @@ class Decoder():
     def decode(self):
         self.decode_message_header()
 
-        if self.product['message_header']['message_code'] == 94:
-            self.__class__ = decoders.p94.p94
-
         self.decode_product_description()
 
         if (self.product['description']['offset_to_symbology'] != 0) :
@@ -66,6 +62,8 @@ class Decoder():
             self.decode_graphic()
         if (self.product['description']['offset_to_tabular'] != 0) :
             self.decode_tabular()
+
+        return self.product
 
     def decode_message_header(self):
         self.product['message_header'] = self.read_section(self.message_header_offset, self.message_header_format, self.message_header_fields)
@@ -91,12 +89,15 @@ class Decoder():
     def decode_tabular(self):
         pass
 
-    def read_section(self, offset, format_str, fields, string=False):
+    def read_section(self, offset, format_str, fields, **kwargs):
         container = {}
         size = struct.calcsize(format_str)
 
+        handle = kwargs.get('handle', self.handle)
+        string = kwargs.get('string', False)
+
         if (not(string)):
-            f = self.handle
+            f = handle
             f.seek(offset)
             s = f.read(size)
             d = struct.unpack(format_str, s)
@@ -114,9 +115,7 @@ class Decoder():
 if __name__ == "__main__":
     decoder = Decoder()
     decoder.load_file(sys.argv[1])
-    decoder.decode()
-
-    product = decoder.product
+    product = decoder.decode()
 
     pprint.pprint(product)
 
