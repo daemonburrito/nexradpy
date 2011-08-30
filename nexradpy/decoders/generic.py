@@ -35,6 +35,16 @@ class Generic():
         self.product = {}
         self.product['header'] = ''
 
+    def load(self, f):
+        self.handle = f
+
+        c = f.read(1)
+        while (ord(c) != 0):
+            self.product['header'] += c
+            c = f.read(1)
+
+        self.message_header_offset = f.tell() - 1
+
     def load_file(self, filespec):
         try:
             self.handle = open(filespec, 'rb')

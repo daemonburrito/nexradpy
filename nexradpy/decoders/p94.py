@@ -55,7 +55,6 @@ class p94(Generic):
     radial_fields = ['number_bytes', 'start_angle', 'delta_angle']
     radial_format = '>3h'
 
-    # todo: use tempfile.TemporaryFile for compressed data
     def decode_symbology(self):
         f = self.handle
 
@@ -67,8 +66,6 @@ class p94(Generic):
 
         compressed = f.read(product_size)
         s = bz2.decompress(compressed)
-
-        # create tempfile here
         
         self.tmp_handle = tempfile.TemporaryFile()
 
@@ -91,11 +88,12 @@ class p94(Generic):
             layer['data']['radials'] = []
 
 
+            #todo make a 2d array from radials and levels, store angle data in matching list
             for j in range(layer['data']['number_radials']):
                 radial = self.read_section(f.tell(), self.radial_format, self.radial_fields, handle=f)
 
                 levels_format = str(radial['number_bytes']) + 'b'
-                radial['levels'] = numpy.array(struct.unpack(levels_format, f.read(radial['number_bytes'])), dtype='int8')
+                radial['levels'] = numpy.array(struct.unpack(levels_format, f.read(radial['number_bytes'])), dtype='>int8')
                 #radial['levels'] = 
                 layer['data']['radials'].append(radial)
 
