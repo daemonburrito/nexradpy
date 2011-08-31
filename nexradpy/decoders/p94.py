@@ -63,15 +63,13 @@ class p94(Generic):
         product_size = self.product['message_header']['message_length'] \
                 - struct.calcsize(self.message_header_format) \
                 - struct.calcsize(self.product_description_format)
-
-        compressed = f.read(product_size)
-        s = bz2.decompress(compressed)
         
         self.tmp_handle = tempfile.TemporaryFile()
 
+        self.tmp_handle.write(bz2.decompress(f.read(product_size)))
+
         f = self.tmp_handle
 
-        f.write(s)
         f.flush()
 
         self.product['symbology'] = self.read_section(0, self.symbology_format, self.symbology_fields, handle=f)
@@ -96,8 +94,6 @@ class p94(Generic):
                 layer['data']['radials'].append(radial)
 
             self.product['symbology']['layers'].append(layer)
-
-        packet_code = s[16:18]
 
         def close(self):
             close(self.handle)
