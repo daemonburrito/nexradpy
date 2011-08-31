@@ -13,7 +13,10 @@ def load_file(filespec):
 
     if (code == 94):
         decoder = p94.p94()
-        decoder.load(f)
+    else:
+        decoder = generic.Generic()
+
+    decoder.load(f)
 
     return decoder
 
