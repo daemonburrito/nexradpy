@@ -121,20 +121,3 @@ class Generic():
 
     def close(self):
         self.handle.close()
-
-if __name__ == "__main__":
-    decoder = Decoder()
-    decoder.load_file(sys.argv[1])
-    product = decoder.decode()
-
-    pprint.pprint(product)
-
-    #print decoder.header
-
-    #pprint.pprint(decoder.message_header)
-
-    #pprint.pprint(decoder.product_description)
-
-    #pprint.pprint(decoder.symbology_block)
-
-    decoder.close()
