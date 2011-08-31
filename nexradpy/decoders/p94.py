@@ -95,6 +95,6 @@ class p94(Generic):
 
             self.product['symbology']['layers'].append(layer)
 
-        def close(self):
-            close(self.handle)
-            close(self.tmp_handle)
+    def close(self):
+        self.handle.close()
+        self.tmp_handle.close()
