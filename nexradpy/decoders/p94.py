@@ -92,17 +92,12 @@ class p94(Generic):
             for j in range(layer['data']['number_radials']):
                 radial = self.read_section(f.tell(), self.radial_format, self.radial_fields, handle=f)
 
-                levels_format = str(radial['number_bytes']) + 'b'
-                radial['levels'] = numpy.array(struct.unpack(levels_format, f.read(radial['number_bytes'])), dtype='>int8')
-                #radial['levels'] = 
+                radial['levels'] = numpy.ndarray(shape=(radial['number_bytes'],), dtype=numpy.dtype('int8'), buffer=f.read(radial['number_bytes']))
                 layer['data']['radials'].append(radial)
 
             self.product['symbology']['layers'].append(layer)
 
         packet_code = s[16:18]
-        #print struct.unpack('>h', packet_code)
-
-        #print struct.calcsize(self.data_format)
 
         def close(self):
             close(self.handle)
