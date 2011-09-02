@@ -45,22 +45,6 @@ class Generic():
 
         self.message_header_offset = f.tell() - 1
 
-    def load_file(self, filespec):
-        try:
-            self.handle = open(filespec, 'rb')
-            f = self.handle
-
-            c = f.read(1)
-
-            while (ord(c) != 0):
-                self.product['header'] += c
-                c = f.read(1)
-
-            self.message_header_offset = f.tell() - 1
-
-        except IOError:
-            print "Couldn't load file"
-
     def decode(self):
         self.decode_message_header()
 
