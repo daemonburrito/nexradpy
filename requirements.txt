@@ -1,0 +1,7 @@
+Pillow==2.1.0
+argparse==1.2.1
+ipython==0.11
+matplotlib==1.0.1
+numpy==1.6.1
+setuptools-git==0.4.2
+wsgiref==0.1.2

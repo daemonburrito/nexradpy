@@ -1,7 +1,6 @@
 from generic import Generic
 import struct, bz2, tempfile
 import pprint
-import Image, ImageDraw
 import numpy
 
 class p58(Generic):
