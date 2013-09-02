@@ -1,5 +1,5 @@
 from decoders import generic
-from decoders import p94
+from decoders import p94, p58
 import struct
 
 def load_file(filespec):
@@ -13,6 +13,8 @@ def load_file(filespec):
 
     if (code == 94):
         decoder = p94.p94()
+    elif (code == 58):
+        decoder = p58.p58()
     else:
         decoder = generic.Generic()
 

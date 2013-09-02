@@ -31,6 +31,17 @@ class Generic():
     message_header_format = '>2h2i3h'
     product_description_format = '>2x2i7hihi4xh48x2b3i'
 
+    symbology_fields = ['block_id',
+            'block_length',
+            'layers_number']
+    symbology_format = '>xxhih'
+
+    layer_fields = ['length']
+    layer_format = '>i'
+
+    data_fields = ['packet_code']
+    data_format = '>h'
+
     def __init__(self):
         self.product = {}
         self.product['header'] = ''
