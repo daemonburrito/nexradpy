@@ -40,10 +40,42 @@ class PNG(OutputFilter):
 
     def _levels(self, value):
         """Return a RGB tuple based on value."""
+
+        # precipitation mode range: 0 dB to 95 dB
+        # 256 levels normalized: 1 dB == 2.694736842
         if value == 0:
             return (0,0,0,0)
-        else:
-            return (value, value, value)
+
+        if value < 13:
+            return (int("9C", 16), int("9C", 16), int("9C", 16))
+        elif value >= 13 and value < 27:
+            return (int("76", 16), int("76", 16), int("76", 16))
+        elif value >= 27 and value < 40:
+            return (int("FF", 16), int("AA", 16), int("AA", 16))
+        elif value >= 40 and value < 54:
+            return (int("EE", 16), int("8C", 16), int("8C", 16))
+        elif value >= 54 and value < 67:
+            return (int("C9", 16), int("70", 16), int("70", 16))
+        elif value >= 67 and value < 81:
+            return (int("00", 16), int("FB", 16), int("90", 16))
+        elif value >= 81 and value < 94:
+            return (int("00", 16), int("BB", 16), int("00", 16))
+        elif value >= 94 and value < 108:
+            return (int("FF", 16), int("FF", 16), int("70", 16))
+        elif value >= 108 and value < 121:
+            return (int("D0", 16), int("D0", 16), int("60", 16))
+        elif value >= 121 and value < 135:
+            return (int("FF", 16), int("60", 16), int("60", 16))
+        elif value >= 135 and value < 148:
+            return (int("DA", 16), int("00", 16), int("00", 16))
+        elif value >= 148 and value < 162:
+            return (int("AE", 16), int("00", 16), int("00", 16))
+        elif value >= 162 and value < 175:
+            return (int("00", 16), int("00", 16), int("FF", 16))
+        elif value >= 175 and value < 188:
+            return (int("E7", 16), int("00", 16), int("FF", 16))
+
+        return (value, value, value)
 
     def _draw_radial(self, angle_tuple_deg, bins):
         """Draws a radial. First value of angle tuple is start angle, second
@@ -59,6 +91,7 @@ class PNG(OutputFilter):
         r = 1
         for bn in bins:
             # first bin
+            lvl = self._levels(bn)
             if r == 1:
                 points = [self.center]
 
@@ -68,7 +101,7 @@ class PNG(OutputFilter):
                 points.append( (self.center[0] + math.cos(end_angle),
                     self.center[1] + math.sin(end_angle)) )
 
-                self.draw.polygon(points, outline=self._levels(bn), fill=self._levels(bn))
+                self.draw.polygon(points, outline=lvl, fill=lvl)
 
                 point_a = points[1]
                 point_b = points[2]
@@ -88,7 +121,7 @@ class PNG(OutputFilter):
 
                 points.append( point_a )
                 points.append( point_b )
-                self.draw.polygon(points, outline=self._levels(bn), fill=self._levels(bn))
+                self.draw.polygon(points, outline=lvl, fill=lvl)
                 r += 1
 
                 point_a = points[0]
