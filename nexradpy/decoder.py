@@ -3,6 +3,10 @@ Returns appropriate decoder for file type."""
 from nexradpy.decoders import generic
 from nexradpy.decoders import p94, p58
 import struct
+import logging
+
+logging.basicConfig(filename='nexradpy-decoder.log', level=logging.DEBUG)
+logging.info('Started decoder')
 
 def load_file(filespec):
     """Load a file. Returns decoder."""
@@ -21,6 +25,7 @@ def load_file(filespec):
     else:
         decoder = generic.Generic()
 
+    logging.info('Loading decoder {0}.'.format(decoder.__class__))
     decoder.load(fh)
 
     return decoder

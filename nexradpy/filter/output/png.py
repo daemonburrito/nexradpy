@@ -92,14 +92,18 @@ class PNG(OutputFilter):
         for bn in bins:
             # first bin
             lvl = self._levels(bn)
+
+            fn1 = math.cos
+            fn2 = math.sin
+
             if r == 1:
                 points = [self.center]
 
-                points.append( (self.center[0] + math.cos(start_angle),
-                    self.center[1] + math.sin(start_angle)) )
+                points.append( (self.center[0] + fn1(start_angle),
+                    self.center[1] + fn2(start_angle)) )
 
-                points.append( (self.center[0] + math.cos(end_angle),
-                    self.center[1] + math.sin(end_angle)) )
+                points.append( (self.center[0] + fn1(end_angle),
+                    self.center[1] + fn2(end_angle)) )
 
                 self.draw.polygon(points, outline=lvl, fill=lvl)
 
@@ -110,13 +114,13 @@ class PNG(OutputFilter):
                 # we just need two more points to draw the next bin
                 points = []
                 points.append(
-                    (self.center[0] + ((r + 1) * math.cos(start_angle)),
-                    self.center[1] + ((r + 1) * math.sin(start_angle)) )
+                    (self.center[0] + ((r + 1) * fn1(start_angle)),
+                    self.center[1] + ((r + 1) * fn2(start_angle)) )
                 )
 
                 points.append(
-                    (self.center[0] + ((r + 1) * math.cos(end_angle)),
-                    self.center[1] + ((r + 1) * math.sin(end_angle)) )
+                    (self.center[0] + ((r + 1) * fn1(end_angle)),
+                    self.center[1] + ((r + 1) * fn2(end_angle)) )
                 )
 
                 points.append( point_a )

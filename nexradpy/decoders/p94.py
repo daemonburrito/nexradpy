@@ -2,6 +2,7 @@ from generic import Generic
 import struct, bz2, tempfile
 import pprint
 import numpy
+import logging
 
 class p94(Generic):
     product_description_fields = ['latitude', # i
@@ -93,6 +94,22 @@ class p94(Generic):
                 layer['data']['radials'].append(radial)
 
             self.product['symbology']['layers'].append(layer)
+
+        logging.info('Read product. Header: {0}.'.format(self.product['message_header']))
+        logging.info('Description: {0}'.format(self.product['description']))
+        logging.info('Symbology data:')
+        logging.info('number_bins: {0}'.format(
+            self.product['symbology']['layers'][0]['data']['number_bins']))
+        logging.info('center_i: {0}'.format(
+            self.product['symbology']['layers'][0]['data']['center_i']))
+        logging.info('center_j: {0}'.format(
+            self.product['symbology']['layers'][0]['data']['center_j']))
+        logging.info('elevation_cosine: {0}'.format(
+            self.product['symbology']['layers'][0]['data']['elevation_cosine']))
+        logging.info('number_radials: {0}'.format(
+            self.product['symbology']['layers'][0]['data']['number_radials']))
+
+
 
     def close(self):
         self.handle.close()
