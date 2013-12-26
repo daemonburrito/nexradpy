@@ -20,3 +20,4 @@ class PNGFilterTest(FiltersTest):
 
     def test_filter(self):
         im = nexradpy.filter.output.png.PNG().filter(self.product)
+        im.save(tests.get_fixture_path('p94-test.png'))
