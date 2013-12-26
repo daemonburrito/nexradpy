@@ -88,16 +88,15 @@ class Generic():
 
         if (desc['offset_to_symbology'] != 0):
             so = (desc['offset_to_symbology'] * 2) + h_offset
+            self.symbology_offset = so
         
         if (desc['offset_to_graphic'] != 0):
             go = (desc['offset_to_graphic'] * 2) + h_offset
+            self.graphic_offset = go
 
         if (desc['offset_to_tabular'] != 0):
-            to= (desc['offset_to_tabular'] * 2) + h_offset
-
-        self.symbology_offset = so
-        self.graphic_offset = go
-        self.tabular_offset = to
+            to = (desc['offset_to_tabular'] * 2) + h_offset
+            self.tabular_offset = to
 
     def decode_symbology(self):
         pass

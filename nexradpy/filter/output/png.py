@@ -8,6 +8,7 @@ try:
 except ImportError:
     import Image, ImageDraw
 
+
 class PNG(OutputFilter):
     """Outputs a PNG from a decoded product."""
     p = None
