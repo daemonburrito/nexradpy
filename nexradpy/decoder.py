@@ -8,6 +8,7 @@ import logging
 logging.basicConfig(filename='nexradpy-decoder.log', level=logging.DEBUG)
 logging.info('Started decoder')
 
+
 def load_file(filespec):
     """Load a file. Returns decoder."""
     try:
@@ -29,6 +30,7 @@ def load_file(filespec):
     decoder.load(fh)
 
     return decoder
+
 
 def get_product_code(fh):
     """Given a file handle, determines product type."""

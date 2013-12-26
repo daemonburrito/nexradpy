@@ -33,7 +33,8 @@ class PNG(OutputFilter):
         self.draw = ImageDraw.Draw(self.im)
 
         for radial in p['symbology']['layers'][0]['data']['radials']:
-            self._draw_radial((radial['start_angle'] / 10, radial['delta_angle'] / 10),
+            self._draw_radial(
+                    (radial['start_angle'] / 10, radial['delta_angle'] / 10),
                     radial['levels'])
 
         return self.im

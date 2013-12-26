@@ -1,5 +1,6 @@
 import struct, sys, os, pprint
 
+
 class Generic():
     message_header_fields = ['message_code',
             'message_date',
@@ -61,31 +62,42 @@ class Generic():
 
         self.decode_product_description()
 
-        if (self.product['description']['offset_to_symbology'] != 0) :
+        if (self.product['description']['offset_to_symbology'] != 0):
             self.decode_symbology()
-        if (self.product['description']['offset_to_graphic'] != 0) :
+        if (self.product['description']['offset_to_graphic'] != 0):
             self.decode_graphic()
-        if (self.product['description']['offset_to_tabular'] != 0) :
+        if (self.product['description']['offset_to_tabular'] != 0):
             self.decode_tabular()
 
         return self.product
 
     def decode_message_header(self):
-        self.product['message_header'] = self.read_section(self.message_header_offset, self.message_header_format, self.message_header_fields)
+        self.product['message_header'] = self.read_section(
+                self.message_header_offset, self.message_header_format,
+                self.message_header_fields)
 
         self.product_description_offset = self.handle.tell()
 
     def decode_product_description(self):
-        self.product['description'] = self.read_section(self.product_description_offset, self.product_description_format, self.product_description_fields)
+        self.product['description'] = self.read_section(
+                self.product_description_offset,
+                self.product_description_format,
+                self.product_description_fields)
+        h_offset = self.message_header_offset
+        desc = self.product['description']
 
-        if (self.product['description']['offset_to_symbology'] != 0):
-            self.symbology_offset = (self.product['description']['offset_to_symbology'] * 2) + self.message_header_offset
+        if (desc['offset_to_symbology'] != 0):
+            so = (desc['offset_to_symbology'] * 2) + h_offset
         
-        if (self.product['description']['offset_to_graphic'] != 0):
-            self.graphic_offset = (self.product['description']['offset_to_graphic'] * 2) + self.message_header_offset
+        if (desc['offset_to_graphic'] != 0):
+            go = (desc['offset_to_graphic'] * 2) + h_offset
 
-        if (self.product['description']['offset_to_tabular'] != 0):
-            self.tabular_offset = (self.product['description']['offset_to_tabular'] * 2) + self.message_header_offset
+        if (desc['offset_to_tabular'] != 0):
+            to= (desc['offset_to_tabular'] * 2) + h_offset
+
+        self.symbology_offset = so
+        self.graphic_offset = go
+        self.tabular_offset = to
 
     def decode_symbology(self):
         pass

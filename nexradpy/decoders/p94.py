@@ -4,6 +4,7 @@ import pprint
 import numpy
 import logging
 
+
 class p94(Generic):
     product_description_fields = ['latitude', # i
             'longitude', # i
@@ -72,7 +73,8 @@ class p94(Generic):
 
         f.flush()
 
-        self.product['symbology'] = self.read_section(0, self.symbology_format, self.symbology_fields, handle=f)
+        self.product['symbology'] = self.read_section(0, self.symbology_format,
+                self.symbology_fields, handle=f)
 
         self.product['symbology']['layers'] = []
 
@@ -80,36 +82,45 @@ class p94(Generic):
         layer_format_size = struct.calcsize(self.layer_format)
 
         for i in range(self.product['symbology']['layers_number']):
-            layer = self.read_section(layer_offset, self.layer_format, self.layer_fields, handle=f)
+            layer = self.read_section(layer_offset, self.layer_format,
+                    self.layer_fields, handle=f)
 
-            layer['data'] = self.read_section(f.tell(), self.data_format, self.data_fields, handle=f)
+            layer['data'] = self.read_section(f.tell(), self.data_format,
+                    self.data_fields, handle=f)
             layer['data']['radials'] = []
 
-
-            #todo make a 2d array from radials and levels, store angle data in matching list
+            #TODO make a 2d array from radials and levels, store angle data in
+            # matching list
             for j in range(layer['data']['number_radials']):
-                radial = self.read_section(f.tell(), self.radial_format, self.radial_fields, handle=f)
+                radial = self.read_section(f.tell(), self.radial_format,
+                        self.radial_fields, handle=f)
 
-                radial['levels'] = numpy.ndarray(shape=(radial['number_bytes'],), dtype=numpy.dtype('int8'), buffer=f.read(radial['number_bytes']))
+                radial['levels'] = numpy.ndarray(
+                        shape=(radial['number_bytes']),
+                        dtype=numpy.dtype('int8'),
+                        buffer=f.read(radial['number_bytes']))
                 layer['data']['radials'].append(radial)
 
             self.product['symbology']['layers'].append(layer)
 
-        logging.info('Read product. Header: {0}.'.format(self.product['message_header']))
-        logging.info('Description: {0}'.format(self.product['description']))
-        logging.info('Symbology data:')
-        logging.info('number_bins: {0}'.format(
-            self.product['symbology']['layers'][0]['data']['number_bins']))
-        logging.info('center_i: {0}'.format(
-            self.product['symbology']['layers'][0]['data']['center_i']))
-        logging.info('center_j: {0}'.format(
-            self.product['symbology']['layers'][0]['data']['center_j']))
-        logging.info('elevation_cosine: {0}'.format(
-            self.product['symbology']['layers'][0]['data']['elevation_cosine']))
-        logging.info('number_radials: {0}'.format(
-            self.product['symbology']['layers'][0]['data']['number_radials']))
+        logging_msg = """Read product.\nHeader: {0}.\n
+                Description: {1}\n
+                Symbology data:\n
+                \tnumber_bins: {2}\n
+                \tcenter_i: {3}\n
+                \tcenter_j: {4}\n
+                \televation_cosine: {5}\n
+                \tnumber_radials: {6}"""
+        sym_data = self.product['symbology']['layers'][0]['data']
 
-
+        logging.info(logging_msg.format(
+                self.product['message_header'],
+                self.product['description'],
+                sym_data['number_bins'],
+                sym_data['center_i'],
+                sym_data['center_j'],
+                sym_data['elevation_cosine'],
+                sym_data['number_radials']))
 
     def close(self):
         self.handle.close()
